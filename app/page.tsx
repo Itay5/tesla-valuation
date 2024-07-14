@@ -21,26 +21,24 @@ const initialCarModels: CarModel[] = [
 ];
 
 const initialEnergyProducts: EnergyProduct[] = [
-  { name: 'Powerwall', units: 300000, capacity: 13.5 }, // 13.5 kWh
-  { name: 'Megapack', units: 2750, capacity: 3.9 }, // 3.9 MWh
+  { name: 'Powerwall', units: 300000, capacity: 13.5 },
+  { name: 'Megapack', units: 2750, capacity: 3.9 },
 ];
 
 export default function Home() {
   const [carModels, setCarModels] = useState<CarModel[]>(initialCarModels);
   const [energyProducts, setEnergyProducts] = useState<EnergyProduct[]>(initialEnergyProducts);
   const [energyProfitPercentage, setEnergyProfitPercentage] = useState(19);
-  const [revenuePerGWh, setRevenuePerGWh] = useState(407000000); // $407 million per GWh
+  const [revenuePerGWh, setRevenuePerGWh] = useState(407000000);
 
   const [includeFSD, setIncludeFSD] = useState(true);
   const [includeOptimus, setIncludeOptimus] = useState(true);
 
-  // FSD state
   const [fleetSize, setFleetSize] = useState(5000000);
   const [potentialRevenuePerVehicle, setPotentialRevenuePerVehicle] = useState(6000);
   const [usageFactor, setUsageFactor] = useState(100);
   const [fsdProfitFactor, setFsdProfitFactor] = useState(50);
 
-  // Humanoids (Optimus) state
   const [humanoidUnits, setHumanoidUnits] = useState(0);
   const [humanoidAvgCost, setHumanoidAvgCost] = useState(10000);
   const [humanoidAvgSellingPrice, setHumanoidAvgSellingPrice] = useState(20000);
@@ -72,7 +70,7 @@ export default function Home() {
     (includeOptimus ? humanoidsTotalProfit : 0);
 
   const totalValuation = totalProfit * peRatio;
-  const outstandingShares = 3.19e9; // 3.19 billion
+  const outstandingShares = 3.19e9;
   const calculatedStockPrice = totalValuation / outstandingShares;
   const userStockValue = calculatedStockPrice * userStockCount;
 
@@ -133,8 +131,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Updated Sticky Footer with Stock Information and Company Valuation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg py-3">
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-100 border-t border-gray-300 shadow-lg py-3">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
             <div className="flex justify-center space-x-4">
@@ -143,6 +140,7 @@ export default function Home() {
                   id="fsd-toggle"
                   checked={includeFSD}
                   onCheckedChange={setIncludeFSD}
+                  aria-label={`Include FSD in calculations: ${includeFSD ? 'on' : 'off'}`}
                 />
                 <Label htmlFor="fsd-toggle" className="text-sm font-medium">FSD</Label>
               </div>
@@ -151,6 +149,7 @@ export default function Home() {
                   id="optimus-toggle"
                   checked={includeOptimus}
                   onCheckedChange={setIncludeOptimus}
+                  aria-label={`Include Optimus in calculations: ${includeOptimus ? 'on' : 'off'}`}
                 />
                 <Label htmlFor="optimus-toggle" className="text-sm font-medium">Optimus</Label>
               </div>
@@ -163,30 +162,31 @@ export default function Home() {
                 value={userStockCount}
                 onChange={(e) => setUserStockCount(Number(e.target.value) || 0)}
                 className="w-24 h-8 text-sm"
+                aria-label="Enter your stock count"
               />
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 col-span-1 lg:col-span-2">
               <div className="text-center">
                 <p className="text-xs font-medium mb-1">Stock Price</p>
-                <p className="text-sm font-bold text-green-600">
+                <p className="text-sm font-bold text-green-800">
                   ${calculatedStockPrice.toFixed(2)}
                 </p>
               </div>
               <div className="text-center">
                 <p className="text-xs font-medium mb-1">Company Valuation</p>
-                <p className="text-sm font-bold text-blue-600">
+                <p className="text-sm font-bold text-blue-800">
                   ${(totalValuation / 1e9).toFixed(2)}B
                 </p>
               </div>
               <div className="text-center">
                 <p className="text-xs font-medium mb-1">Total Profit</p>
-                <p className="text-sm font-bold text-yellow-600">
+                <p className="text-sm font-bold text-yellow-800">
                   ${(totalProfit / 1e9).toFixed(2)}B
                 </p>
               </div>
               <div className="text-center">
                 <p className="text-xs font-medium mb-1">Your Stock Value</p>
-                <p className="text-sm font-bold text-purple-600">
+                <p className="text-sm font-bold text-purple-800">
                   ${userStockValue.toLocaleString(undefined, {maximumFractionDigits: 0})}
                 </p>
               </div>
