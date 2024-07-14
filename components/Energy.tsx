@@ -3,6 +3,7 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export interface EnergyProduct {
   name: string;
@@ -18,6 +19,8 @@ interface EnergyProps {
   revenuePerGWh: number;
   onRevenuePerGWhChange: (value: number) => void;
 }
+
+
 
 export function Energy({ 
   products, 
@@ -88,7 +91,11 @@ export function Energy({
             <TableRow key={product.name}>
               <TableCell>{product.name}</TableCell>
               <TableCell>
+                <Label htmlFor={`${product.name}-units`} className="sr-only">
+                  {product.name} Units
+                </Label>
                 <Input
+                  id={`${product.name}-units`}
                   type="number"
                   value={product.units}
                   onChange={(e) => handleInputChange(index, 'units', e.target.value)}
