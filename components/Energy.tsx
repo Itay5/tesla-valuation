@@ -57,7 +57,7 @@ export function Energy({
             id="revenuePerGWh"
             type="number"
             value={revenuePerGWh}
-            onChange={(e) => onRevenuePerGWhChange(parseFloat(e.target.value) || '')}
+            onChange={(e) => onRevenuePerGWhChange(Number(e.target.value) || 0)}
             className="mt-1"
           />
         </div>
@@ -69,7 +69,7 @@ export function Energy({
             id="profitPercentage"
             type="number"
             value={profitPercentage}
-            onChange={(e) => onProfitPercentageChange(parseFloat(e.target.value) || '')}
+            onChange={(e) => onProfitPercentageChange(Number(e.target.value) || 0)}
             className="mt-1"
           />
         </div>

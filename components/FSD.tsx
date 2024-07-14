@@ -42,7 +42,7 @@ export function FSD({
               id="fleetSize"
               type="number"
               value={fleetSize}
-              onChange={(e) => onFleetSizeChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onFleetSizeChange(Number(e.target.value) || 0)}
             />
           </div>
           <div className="space-y-2">
@@ -51,7 +51,7 @@ export function FSD({
               id="potentialRevenue"
               type="number"
               value={potentialRevenuePerVehicle}
-              onChange={(e) => onPotentialRevenuePerVehicleChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onPotentialRevenuePerVehicleChange(Number(e.target.value) || 0)}
             />
           </div>
           <div className="space-y-2">
@@ -60,7 +60,7 @@ export function FSD({
               id="usageFactor"
               type="number"
               value={usageFactor}
-              onChange={(e) => onUsageFactorChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onUsageFactorChange(Number(e.target.value) || 0)}
             />
           </div>
           <div className="space-y-2">
@@ -69,7 +69,7 @@ export function FSD({
               id="profitFactor"
               type="number"
               value={profitFactor}
-              onChange={(e) => onProfitFactorChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onProfitFactorChange(Number(e.target.value) || 0)}
             />
           </div>
         </div>

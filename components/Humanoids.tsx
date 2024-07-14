@@ -38,7 +38,7 @@ export function Humanoids({
               id="units"
               type="number"
               value={units}
-              onChange={(e) => onUnitsChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onUnitsChange(Number(e.target.value) || 0)}
             />
           </div>
           <div className="space-y-2">
@@ -47,7 +47,7 @@ export function Humanoids({
               id="avgCost"
               type="number"
               value={avgCost}
-              onChange={(e) => onAvgCostChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onAvgCostChange(Number(e.target.value) || 0)}
             />
           </div>
           <div className="space-y-2">
@@ -56,7 +56,7 @@ export function Humanoids({
               id="avgSellingPrice"
               type="number"
               value={avgSellingPrice}
-              onChange={(e) => onAvgSellingPriceChange(parseFloat(e.target.value) || '')}
+              onChange={(e) => onAvgSellingPriceChange(Number(e.target.value) || 0)}
             />
           </div>
         </div>

@@ -21,7 +21,7 @@ export function Valuation({ totalProfit }: ValuationProps) {
           id="peRatio"
           type="number"
           value={peRatio}
-          onChange={(e) => setPeRatio(parseFloat(e.target.value) || '')}
+          onChange={(e) => setPeRatio(Number(e.target.value) || 0)}
           className="w-16 h-8 text-sm"
         />
       </div>
