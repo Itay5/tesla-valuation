@@ -1,113 +1,168 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { CarModels, CarModel } from '@/components/CarModels';
+import { Energy, EnergyProduct } from '@/components/Energy';
+import { FSD } from '@/components/FSD';
+import { Humanoids } from '@/components/Humanoids';
+import { Valuation } from '@/components/Valuation';
+
+const initialCarModels: CarModel[] = [
+  { name: 'Model 3', units: 764025, avgPrice: 41000, avgCost: 37807 },
+  { name: 'Model Y', units: 1004389, avgPrice: 46000, avgCost: 41818 },
+  { name: 'Model S', units: 35000, avgPrice: 85000, avgCost: 70000 },
+  { name: 'Model X', units: 35000, avgPrice: 95000, avgCost: 80000 },
+  { name: 'Cybertruck', units: 0, avgPrice: 50000, avgCost: 45000 },
+  { name: 'Semi', units: 0, avgPrice: 150000, avgCost: 130000 },
+  { name: 'Robotaxi', units: 0, avgPrice: 100000, avgCost: 80000 },
+];
+
+const initialEnergyProducts: EnergyProduct[] = [
+  { name: 'Powerwall', units: 300000, capacity: 13.5 }, // 13.5 kWh
+  { name: 'Megapack', units: 2750, capacity: 3.9 }, // 3.9 MWh
+];
 
 export default function Home() {
+  const [carModels, setCarModels] = useState<CarModel[]>(initialCarModels);
+  const [energyProducts, setEnergyProducts] = useState<EnergyProduct[]>(initialEnergyProducts);
+  const [energyProfitPercentage, setEnergyProfitPercentage] = useState(19);
+  const [revenuePerGWh, setRevenuePerGWh] = useState(407000000); // $407 million per GWh
+
+  const [includeFSD, setIncludeFSD] = useState(true);
+  const [includeOptimus, setIncludeOptimus] = useState(true);
+
+  // FSD state
+  const [fleetSize, setFleetSize] = useState(5000000);
+  const [potentialRevenuePerVehicle, setPotentialRevenuePerVehicle] = useState(6000);
+  const [usageFactor, setUsageFactor] = useState(100);
+  const [fsdProfitFactor, setFsdProfitFactor] = useState(50);
+
+  // Humanoids (Optimus) state
+  const [humanoidUnits, setHumanoidUnits] = useState(0);
+  const [humanoidAvgCost, setHumanoidAvgCost] = useState(10000);
+  const [humanoidAvgSellingPrice, setHumanoidAvgSellingPrice] = useState(20000);
+
+  const carTotalProfit = carModels.reduce((sum, model) => 
+    sum + (model.units * (model.avgPrice - model.avgCost)), 0);
+
+  const energyTotalGWh = energyProducts.reduce((sum, product) => {
+    const gwh = product.name === 'Powerwall' 
+      ? (product.units * product.capacity) / 1000000 
+      : (product.units * product.capacity) / 1000;
+    return sum + gwh;
+  }, 0);
+
+  const energyTotalRevenue = energyTotalGWh * revenuePerGWh;
+  const energyTotalProfit = energyTotalRevenue * (energyProfitPercentage / 100);
+
+  const fsdTotalRevenue = fleetSize * potentialRevenuePerVehicle * (usageFactor / 100);
+  const fsdTotalProfit = fsdTotalRevenue * (fsdProfitFactor / 100);
+
+  const humanoidsTotalRevenue = humanoidUnits * humanoidAvgSellingPrice;
+  const humanoidsTotalProfit = humanoidUnits * (humanoidAvgSellingPrice - humanoidAvgCost);
+
+  const totalProfit = carTotalProfit + energyTotalProfit + 
+    (includeFSD ? fsdTotalProfit : 0) +
+    (includeOptimus ? humanoidsTotalProfit : 0);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-grow container mx-auto p-4 pb-24">
+        <h1 className="text-4xl font-bold mb-8 text-center">Tesla Valuation Dashboard</h1>
+        
+        <div className="grid gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Vehicle Models</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CarModels models={carModels} onModelChange={setCarModels} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Energy Products</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Energy 
+                products={energyProducts} 
+                onProductChange={setEnergyProducts}
+                profitPercentage={energyProfitPercentage}
+                onProfitPercentageChange={setEnergyProfitPercentage}
+                revenuePerGWh={revenuePerGWh}
+                onRevenuePerGWhChange={setRevenuePerGWh}
+              />
+            </CardContent>
+          </Card>
+
+          <div className={`transition-opacity duration-300 ${includeFSD ? 'opacity-100' : 'opacity-50'}`}>
+            <FSD
+              fleetSize={fleetSize}
+              onFleetSizeChange={setFleetSize}
+              potentialRevenuePerVehicle={potentialRevenuePerVehicle}
+              onPotentialRevenuePerVehicleChange={setPotentialRevenuePerVehicle}
+              usageFactor={usageFactor}
+              onUsageFactorChange={setUsageFactor}
+              profitFactor={fsdProfitFactor}
+              onProfitFactorChange={setFsdProfitFactor}
             />
-          </a>
+          </div>
+
+          <div className={`transition-opacity duration-300 ${includeOptimus ? 'opacity-100' : 'opacity-50'}`}>
+            <Humanoids
+              units={humanoidUnits}
+              onUnitsChange={setHumanoidUnits}
+              avgCost={humanoidAvgCost}
+              onAvgCostChange={setHumanoidAvgCost}
+              avgSellingPrice={humanoidAvgSellingPrice}
+              onAvgSellingPriceChange={setHumanoidAvgSellingPrice}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      {/* Sticky Footer for Total Valuation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
+        <div className="container mx-auto py-3 px-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="fsd-toggle"
+                  checked={includeFSD}
+                  onCheckedChange={setIncludeFSD}
+                />
+                <Label htmlFor="fsd-toggle" className="text-sm font-medium">FSD</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="optimus-toggle"
+                  checked={includeOptimus}
+                  onCheckedChange={setIncludeOptimus}
+                />
+                <Label htmlFor="optimus-toggle" className="text-sm font-medium">Optimus</Label>
+              </div>
+            </div>
+            <Separator orientation="vertical" className="h-10" />
+            <div className="flex items-center space-x-6">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Total Profit</p>
+                <p className="text-xl font-bold text-green-600">${totalProfit.toLocaleString()}</p>
+              </div>
+              <Separator orientation="vertical" className="h-10" />
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-1">Valuation</p>
+                <Valuation totalProfit={totalProfit} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </div>
   );
 }
