@@ -4,12 +4,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Input } from '@/components/ui/input';
 import { CarModels, CarModel } from '@/components/CarModels';
 import { Energy, EnergyProduct } from '@/components/Energy';
 import { FSD } from '@/components/FSD';
 import { Humanoids } from '@/components/Humanoids';
-import { Valuation } from '@/components/Valuation';
 
 const initialCarModels: CarModel[] = [
   { name: 'Model 3', units: 764025, avgPrice: 41000, avgCost: 37807 },
@@ -46,6 +45,9 @@ export default function Home() {
   const [humanoidAvgCost, setHumanoidAvgCost] = useState(10000);
   const [humanoidAvgSellingPrice, setHumanoidAvgSellingPrice] = useState(20000);
 
+  const [peRatio, setPeRatio] = useState(30);
+  const [userStockCount, setUserStockCount] = useState(0);
+
   const carTotalProfit = carModels.reduce((sum, model) => 
     sum + (model.units * (model.avgPrice - model.avgCost)), 0);
 
@@ -68,6 +70,11 @@ export default function Home() {
   const totalProfit = carTotalProfit + energyTotalProfit + 
     (includeFSD ? fsdTotalProfit : 0) +
     (includeOptimus ? humanoidsTotalProfit : 0);
+
+  const totalValuation = totalProfit * peRatio;
+  const outstandingShares = 3.19e9; // 3.19 billion
+  const calculatedStockPrice = totalValuation / outstandingShares;
+  const userStockValue = calculatedStockPrice * userStockCount;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -126,40 +133,62 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Sticky Footer for Total Valuation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
-        <div className="container mx-auto py-3 px-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="fsd-toggle"
-                checked={includeFSD}
-                onCheckedChange={setIncludeFSD}
-                aria-label={`Toggle FSD inclusion ${includeFSD ? 'on' : 'off'}`}
-              />
-              <Label htmlFor="fsd-toggle" className="text-sm font-medium">FSD</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="optimus-toggle"
-                checked={includeOptimus}
-                onCheckedChange={setIncludeOptimus}
-                aria-label={`Toggle Optimus inclusion ${includeOptimus ? 'on' : 'off'}`}
-              />
-              <Label htmlFor="optimus-toggle" className="text-sm font-medium">Optimus</Label>
-            </div>
-            </div>
-            <Separator orientation="vertical" className="h-10" />
-            <div className="flex items-center space-x-6">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Total Profit</p>
-                <p className="text-xl font-bold text-green-600">${totalProfit.toLocaleString()}</p>
+      {/* Updated Sticky Footer with Stock Information and Company Valuation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg py-3">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+            <div className="flex justify-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="fsd-toggle"
+                  checked={includeFSD}
+                  onCheckedChange={setIncludeFSD}
+                />
+                <Label htmlFor="fsd-toggle" className="text-sm font-medium">FSD</Label>
               </div>
-              <Separator orientation="vertical" className="h-10" />
-              <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Valuation</p>
-                <Valuation totalProfit={totalProfit} />
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="optimus-toggle"
+                  checked={includeOptimus}
+                  onCheckedChange={setIncludeOptimus}
+                />
+                <Label htmlFor="optimus-toggle" className="text-sm font-medium">Optimus</Label>
+              </div>
+            </div>
+            <div className="flex justify-center items-center space-x-2">
+              <Label htmlFor="stockCount" className="text-sm font-medium">Your Stocks:</Label>
+              <Input
+                id="stockCount"
+                type="number"
+                value={userStockCount}
+                onChange={(e) => setUserStockCount(Number(e.target.value) || 0)}
+                className="w-24 h-8 text-sm"
+              />
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 col-span-1 lg:col-span-2">
+              <div className="text-center">
+                <p className="text-xs font-medium mb-1">Stock Price</p>
+                <p className="text-sm font-bold text-green-600">
+                  ${calculatedStockPrice.toFixed(2)}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs font-medium mb-1">Company Valuation</p>
+                <p className="text-sm font-bold text-blue-600">
+                  ${(totalValuation / 1e9).toFixed(2)}B
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs font-medium mb-1">Total Profit</p>
+                <p className="text-sm font-bold text-yellow-600">
+                  ${(totalProfit / 1e9).toFixed(2)}B
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs font-medium mb-1">Your Stock Value</p>
+                <p className="text-sm font-bold text-purple-600">
+                  ${userStockValue.toLocaleString(undefined, {maximumFractionDigits: 0})}
+                </p>
               </div>
             </div>
           </div>
