@@ -77,7 +77,7 @@ export default function Home() {
         <div className="grid gap-8">
           <Card>
             <CardHeader>
-              <CardTitle>Vehicle Models</CardTitle>
+              <h2 className="text-2xl font-semibold">Vehicle Models</h2>
             </CardHeader>
             <CardContent>
               <CarModels models={carModels} onModelChange={setCarModels} />
@@ -86,7 +86,7 @@ export default function Home() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Energy Products</CardTitle>
+              <h2 className="text-2xl font-semibold">Energy Products</h2>
             </CardHeader>
             <CardContent>
               <Energy 
@@ -131,22 +131,24 @@ export default function Home() {
         <div className="container mx-auto py-3 px-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="fsd-toggle"
-                  checked={includeFSD}
-                  onCheckedChange={setIncludeFSD}
-                />
-                <Label htmlFor="fsd-toggle" className="text-sm font-medium">FSD</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="optimus-toggle"
-                  checked={includeOptimus}
-                  onCheckedChange={setIncludeOptimus}
-                />
-                <Label htmlFor="optimus-toggle" className="text-sm font-medium">Optimus</Label>
-              </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="fsd-toggle"
+                checked={includeFSD}
+                onCheckedChange={setIncludeFSD}
+                aria-label={`Toggle FSD inclusion ${includeFSD ? 'on' : 'off'}`}
+              />
+              <Label htmlFor="fsd-toggle" className="text-sm font-medium">FSD</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="optimus-toggle"
+                checked={includeOptimus}
+                onCheckedChange={setIncludeOptimus}
+                aria-label={`Toggle Optimus inclusion ${includeOptimus ? 'on' : 'off'}`}
+              />
+              <Label htmlFor="optimus-toggle" className="text-sm font-medium">Optimus</Label>
+            </div>
             </div>
             <Separator orientation="vertical" className="h-10" />
             <div className="flex items-center space-x-6">
